@@ -94,3 +94,47 @@ Se você rodar o projeto e testar um domínio, verá que ele já está funcionan
 # Modificações:
 
 - DESCREVA AQUI O OBJETIVO DAS MODIFICAÇÕES...
+
+
+
+
+
+
+
+
+
+MANUS
+
+
+Entendido. Vou consolidar o Relatório Final de Recomendações da equipe de TI virtual e, em seguida, fornecer um Prompt Estratégico para instruir uma IA (como o Cursor) a executar as ações necessárias para completar o desafio Umbler.Relatório Final Consolidado de Recomendações (Desafio Umbler)Gerente de Projetos: Felipe
+Arquiteto de Software: Carlos
+Projeto Analisado: Desafio Umbler (C#/.NET Core)
+Objetivo: Atender aos requisitos de melhoria listados no README.md do desafio.1. Recomendações de Arquitetura e Back-end (Carlos e Marcos)Problema IdentificadoAção RecomendadaBenefícioAlta Complexidade Ciclomática no Controller (Linha 81)Refatoração para Arquitetura em Camadas: Mover a lógica de negócio para uma camada de Services ou Handlers (ex: MediatR).Reduz a complexidade, aumenta a legibilidade e facilita a manutenção e os testes.Controller retornando Entidade de Domínio (Linha 82)Implementação de DTOs (Data Transfer Objects): Criar ViewModels específicas para o retorno da API.Evita a exposição de dados internos desnecessários (Id, Ttl, UpdatedAt) e padroniza o contrato da API.Falta de Validação no BackEnd (Linha 80)Validação Robusta: Implementar validação no BackEnd usando FluentValidation ou Data Annotations antes que a requisição prossiga.Previne erros 500 (Exceptions) e aumenta a segurança e a robustez da API.Dificuldade de Mockar a Infraestrutura (Linha 85)Inversão de Dependência: Extrair a lógica de consulta WHOIS/DNS para uma Interface (IWhoisDnsService).Isola o código de negócio da infraestrutura, permitindo o mocking em testes unitários.2. Recomendações de Qualidade e Testes (Larissa)Problema IdentificadoAção RecomendadaBenefícioCobertura de Testes Baixa (Linha 84)Aumento da Cobertura: Focar em testes unitários para a nova camada de Services e Handlers.Garante que a lógica de negócio esteja correta e previne regressões.Impossibilidade de Testar DomainController (Linha 84)Implementação de Mocking: Utilizar a biblioteca Moq para simular a IWhoisDnsService e o DbContext (que já usa InMemoryDatabase).Permite testar o Controller e o Service de forma isolada e rápida.Teste Unitário Comentado (Linha 88)Descomentar e Corrigir: Garantir que o teste unitário comentado seja descomentado e passe com sucesso.Cumpre um requisito obrigatório do desafio.3. Recomendações de Front-end (Júlia)Problema IdentificadoAção RecomendadaBenefícioDados Retornados Não Formatados (Linha 76)Formatação de Dados: Implementar lógica no FrontEnd (ou na ViewModel do BackEnd) para apresentar os dados de DNS de forma legível.Melhora a Experiência do Usuário (UX).Falta de Validação no FrontEnd (Linha 77)Validação de Domínio: Implementar validação de domínio (ex: regex) no lado do cliente antes de enviar a requisição.Melhora a UX, reduz a carga desnecessária no servidor.Uso de Vanilla-JS (Linha 78)Migração para Blazor: Sugestão de migrar o FrontEnd para Blazor (seja Server ou WebAssembly).Permite reutilizar a expertise em C# da equipe, moderniza o FrontEnd e mantém a solução no ecossistema .NET. (Alternativa: ReactJs para uma solução SPA completa).Prompt Estratégico para IA (Cursor/Editor)Este prompt instrui a IA a seguir o plano de ação da equipe de TI virtual, focando nas melhorias listadas no README.md.**Objetivo:** Refatorar e completar o projeto C#/.NET Core "Desafio Umbler" (localizado em src/Desafio.Umbler) para atender a todos os requisitos de melhoria listados no README.md.
+
+**Plano de Ação Detalhado (Prioridade de Execução):**
+
+1.  **Isolamento de Infraestrutura (Testes/Back-end):**
+    *   Crie uma **Interface** (ex: `IWhoisDnsService`) para abstrair a lógica de consulta WHOIS e DNS.
+    *   Refatore a implementação existente para usar essa Interface.
+    *   Injete a Interface no *Controller* e/ou *Service* de domínio.
+
+2.  **Refatoração de Back-end (Arquitetura):**
+    *   Implemente a biblioteca **FluentValidation** para validação de modelos.
+    *   Crie **DTOs (Data Transfer Objects)** ou **ViewModels** para o retorno da API, garantindo que propriedades internas (Id, Ttl, UpdatedAt) não sejam expostas.
+    *   Refatore o *Controller* para ser *thin* (fino), movendo a lógica de negócio para uma camada de *Services* ou *Handlers* (utilize MediatR se for o padrão do projeto, caso contrário, use *Services*).
+
+3.  **Qualidade e Testes (Larissa):**
+    *   Utilize a biblioteca **Moq** para *mockar* a `IWhoisDnsService` nos testes unitários.
+    *   Descomente e corrija o teste unitário que está comentado, garantindo que ele passe.
+    *   Aumente a cobertura de testes unitários para a nova lógica de validação e a camada de *Services*.
+
+4.  **Front-end (Júlia):**
+    *   Implemente **validação de domínio** no lado do cliente (JavaScript/Razor) para evitar requisições inválidas.
+    *   Implemente a **formatação de dados** no *FrontEnd* para apresentar as informações de DNS de forma legível.
+    *   (Opcional, mas recomendado) Se o tempo permitir, inicie a migração do *FrontEnd* para **Blazor** para modernizar a interface.
+
+5.  **Documentação:**
+    *   Atualize o `README.md` na seção "Modificações" com um resumo claro das mudanças realizadas (Arquitetura em Camadas, Uso de DTOs, Inversão de Dependência, Testes Mockados, Validação).
+
+**Instrução Final:** Execute as refatorações e implementações acima, priorizando a correção dos problemas de segurança e testabilidade (passos 1, 2 e 3). Ao final, forneça o código atualizado e o novo `README.md`.
+
