@@ -43,6 +43,10 @@ namespace Desafio.Umbler
 
 
             services.AddControllersWithViews();
+            services.AddServerSideBlazor();
+            services.AddHttpClient();
+            services.AddHttpContextAccessor();
+            services.AddScoped<Services.DomainApiService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,6 +69,7 @@ namespace Desafio.Umbler
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapBlazorHub();
             });
         }
     }

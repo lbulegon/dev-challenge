@@ -93,4 +93,91 @@ Se você rodar o projeto e testar um domínio, verá que ele já está funcionan
 
 # Modificações:
 
-- DESCREVA AQUI O OBJETIVO DAS MODIFICAÇÕES...
+## Melhorias Implementadas
+
+### Backend
+
+#### 1. Sistema de Logging Estruturado ✅
+- Implementado logging detalhado em todos os pontos críticos da aplicação
+- Facilita identificação de erros e rastreamento do fluxo
+- Configurações específicas para desenvolvimento e produção
+
+#### 2. Tratamento de Erros Melhorado ✅
+- Adicionado tratamento adequado de exceções
+- Retorno de códigos HTTP apropriados (400, 404, 500)
+- Mensagens de erro descritivas para o cliente
+- Validação básica de entrada (domínio não vazio)
+
+#### 3. Correção da Lógica de TTL ✅
+- Corrigido bug onde TTL era comparado em minutos ao invés de segundos
+- Cache funciona corretamente, evitando atualizações prematuras
+- Reduz chamadas desnecessárias a serviços externos
+
+#### 4. Arquitetura em Camadas (Em Andamento) 🚧
+- **Interfaces Criadas:**
+  - `IWhoisService` - Abstração para consultas WHOIS
+  - `IDnsService` - Abstração para consultas DNS
+  - `IDomainRepository` - Abstração para acesso a dados
+- **Implementações Criadas:**
+  - `WhoisService` - Wrapper para WhoisClient (permite mock)
+  - `DnsService` - Wrapper para LookupClient (permite mock)
+  - `DomainRepository` - Implementação do Repository Pattern
+- **ViewModels Criados:**
+  - `DomainViewModel` - DTO para retorno da API (sem dados técnicos)
+- **Próximos Passos:**
+  - Criar `IDomainService` e `DomainService` para orquestração
+  - Refatorar `DomainController` para usar serviços
+  - Configurar injeção de dependência no `Startup.cs`
+
+**Motivo das Mudanças:**
+- Reduzir complexidade ciclomática do controller
+- Permitir testabilidade adequada (mock de dependências)
+- Separar responsabilidades seguindo princípios SOLID
+- Facilitar manutenção e extensão do código
+
+### Testes
+
+#### Status Atual
+- Estrutura criada para permitir mock de WhoisClient e DnsClient
+- Teste obrigatório `Domain_Moking_WhoisClient()` será implementado após refatoração do controller
+- Preparação para aumentar cobertura de testes unitários
+
+**Motivo das Mudanças:**
+- Tornar o código testável através de interfaces
+- Permitir que o teste obrigatório seja implementado
+- Facilitar criação de testes unitários isolados
+
+## Melhorias em Andamento
+
+### Backend
+- [ ] Completar refatoração do DomainController
+- [ ] Implementar validação robusta de formato de domínio
+- [ ] Configurar injeção de dependência completa
+
+### Testes
+- [ ] Implementar teste obrigatório `Domain_Moking_WhoisClient()` (DEVE PASSAR)
+- [ ] Aumentar cobertura de testes unitários
+
+### Frontend
+- [ ] Formatar exibição de resultados de forma legível
+- [ ] Implementar validação de formato de domínio no frontend
+
+## Considerações Técnicas
+
+- **Arquitetura:** Implementação de arquitetura em camadas seguindo padrões Repository e Service Layer
+- **SOLID:** Separação de responsabilidades, injeção de dependência e interfaces para desacoplamento
+- **Testabilidade:** Interfaces criadas permitem mock adequado de dependências externas
+- **Manutenibilidade:** Código organizado em camadas facilita manutenção e extensão
+
+
+
+-- llbulegon Refatoração e testes
+
+## Melhorias implementadas
+- Refatoração da camada de serviços
+- Tratamento de erros e timeouts
+- Melhor organização do projeto
+- Testes unitários básicos
+
+## Considerações
+Com mais tempo, eu adicionaria cache, observabilidade e CI.

@@ -18,37 +18,71 @@
     </environment>
 </head>
 <body>
-    <nav id="menu" class="bg-primary Fixed navbar navbar-default navbar-fixed-top navbar-toggleable-xl " role="navigation">
-        <div class="navbar-header">
-            <a id="toogle-menu-mobile" href="#menu-mobile" class="d-block float-xs-right hidden-xl-up"><span class="icon icon-nav-drawer icon-4x"></span></a>  
-            <a class="navbar-brand float-xs-left" href="/"><div class="logo-umbler-negativo"></div></a>
+    <header class="site-header">
+        <div class="container">
+            <a class="logo-link" href="/">
+                <img src="~/assets/tpl/logotipo.png" alt="Umbler Logo" class="umbler-logo" />
+            </a>
         </div>
-        <!-- <div class="collapse navbar-collapse pos-relative float-xs-right" id="navbarSupportedContent">		
-        </div> -->
-    </nav>
+    </header>
 
-    <div class="container body-content">
+    <main class="main-content">
         @RenderBody()
-        <hr />
-        <footer id="footer" class="overflow-hidden">
-            <div class="container pt-5 pos-relative">
-                <div class="row flex-lg">
-                    <div class="col-lg-12">
-                        <div class="footer-copyright flex-sm flex-sm-middle my-3 text-xs-center text-sm-left">
-                            <a href="/" class="mr-2 hidden-xs-down">
-                                <svg class="img-svg img-logo">
-                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#img-umbler-favicon"></use>
-                                </svg>
-                            </a>
-                            <b class="mr-3 hidden-lg-down">Umbler, Inc. © 2017</b>                                            
+    </main>
+    
+    <footer class="site-footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+                        <div class="footer-brand">
+                            <h5 class="footer-logo">
+                                <span class="logo-text">umbler</span>
+                                <span class="logo-subtitle">Domain Inspector</span>
+                            </h5>
+                            <p class="footer-description">
+                                Consulte informações de DNS e WHOIS de qualquer domínio de forma rápida e confiável.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-3 mb-4 mb-md-0">
+                        <h6 class="footer-title">Navegação</h6>
+                        <ul class="footer-links">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="#domain-search">Consultar Domínio</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-3 mb-4 mb-md-0">
+                        <h6 class="footer-title">Sobre</h6>
+                        <ul class="footer-links">
+                            <li><a href="https://www.umbler.com" target="_blank">Umbler</a></li>
+                            <li><a href="https://www.umbler.com/br/sobre" target="_blank">Sobre a Umbler</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-12">
+                        <h6 class="footer-title">Contato</h6>
+                        <ul class="footer-links">
+                            <li><a href="https://www.umbler.com/br/ajuda" target="_blank">Suporte</a></li>
+                            <li><a href="https://www.umbler.com/br/contato" target="_blank">Contato</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <hr class="footer-divider" />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="footer-bottom">
+                            <div class="footer-copyright">
+                                <p>&copy; @DateTime.Now.Year Umbler, Inc. Todos os direitos reservados.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </footer>
-    </div>
     
-    <script src="~/js/site.js" asp-append-version="true"></script>   
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="_framework/blazor.server.js"></script>
 
     @RenderSection("Scripts", required: false)
 </body>
