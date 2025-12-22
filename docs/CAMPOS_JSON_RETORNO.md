@@ -56,41 +56,74 @@ Atualmente, estamos exibindo apenas **3 de 7 campos**:
 
 Segundo o README, o retorno esperado deveria incluir:
 
-- ✅ **Name servers** (ns254.umbler.com) - **NÃO ESTÁ SENDO EXIBIDO**
+- ✅ **Name servers** (ns254.umbler.com) - **EXIBIDO** ✅
 - ✅ **IP do registro A** - Exibido ✅
 - ✅ **Empresa que está hospedado** - Exibido ✅
 
-**Observação:** Name Servers não estão sendo extraídos nem salvos no banco atualmente.
+**Observação:** Name Servers são extraídos do DNS em tempo real através do DnsService e exibidos na interface. Não são salvos no banco de dados, sendo sempre consultados diretamente do DNS.
 
 ---
 
 ## 🎯 Recomendações
 
-### Campos que Poderiam Ser Adicionados à Exibição:
+### ✅ Campos que FORAM Adicionados à Exibição:
 
-1. **Name Servers** (NS records)
-   - Extrair do DNS ou WHOIS
-   - Adicionar ao modelo Domain (ou criar campo separado)
-   - Exibir como lista formatada
+1. **Name Servers** (NS records) ✅ **IMPLEMENTADO**
+   - Extraídos do DNS através do DnsService
+   - Exibidos como lista formatada na aba "Visualização Formatada"
+   - Também disponíveis na aba "Dados Completos"
 
-2. **Data de Atualização** (updatedAt)
-   - Formatar como "Atualizado há X minutos/horas"
+2. **Data de Atualização** (updatedAt) ✅ **IMPLEMENTADO**
+   - Formatada como "Atualizado há X minutos/horas/dias"
+   - Formato inteligente que adapta a mensagem:
+     - Menos de 1 minuto: "Atualizado agora"
+     - Menos de 1 hora: "Atualizado há X minutos"
+     - Menos de 24 horas: "Atualizado há X horas e Y minutos"
+     - Mais de 7 dias: Mostra data completa
    - Útil para o usuário saber se os dados estão frescos
 
-3. **TTL Formatado** (opcional)
-   - Mostrar "Cache válido por X horas/minutos"
-   - Ajuda o usuário a entender quando os dados serão atualizados
+3. **TTL Formatado** ✅ **IMPLEMENTADO**
+   - Mostrado como "Cache válido por X horas/minutos/segundos"
+   - Formato amigável que ajuda o usuário a entender quando os dados serão atualizados
+   - Exemplo: "Cache válido por 1 hora e 30 minutos"
 
-### Campos que NÃO devem ser exibidos:
+### Campos Exibidos com Formatação Especial:
 
-- **`id`** - Informação interna
-- **`whoIs` raw** - Muito grande, dados técnicos brutos
+- **`id`** - Exibido apenas na aba "Dados Completos" (não na visualização formatada principal)
+- **`whoIs` raw** - Disponível na aba "Dados Completos" para consultas técnicas detalhadas
 
 ---
 
-## 💡 Próximos Passos Sugeridos
+4. **ID de Registro** (id) ✅ **IMPLEMENTADO**
+   - Exibido como primeiro campo na visualização formatada
+   - Formato: "#123" (número com prefixo #)
+   - Útil para referência do registro no banco
 
-1. Extrair e exibir Name Servers do DNS
-2. Adicionar campo "Atualizado em" formatado
-3. Considerar usar DomainViewModel ao invés da entidade Domain (já criado, mas não está sendo usado)
+5. **Dados WHOIS Estruturados** (whoisData) ✅ **IMPLEMENTADO**
+   - Parser WHOIS implementado (`WhoisParser`)
+   - Extração estruturada de todos os campos do WHOIS
+   - Exibido em seção expansível com informações organizadas:
+     - Informações do Registro (Registrar, IDs, URLs, datas)
+     - Status do Domínio
+     - Contatos estruturados (Registrant, Admin, Tech)
+     - DNSSEC
+     - Abuse Contact
+   - Modelos: `WhoisData` e `WhoisContact`
+
+6. **Dados WHOIS Raw** (whoIs) ✅ **IMPLEMENTADO**
+   - Disponível em seção colapsável para referência técnica
+   - Mantido para desenvolvedores que precisam do texto completo
+
+## ✅ Status das Melhorias
+
+Todas as recomendações foram implementadas:
+
+1. ✅ Name Servers extraídos e exibidos
+2. ✅ Campo "Atualizado há X" formatado de forma inteligente
+3. ✅ TTL formatado como "Cache válido por X horas/minutos"
+4. ✅ ID de Registro exibido como primeiro campo
+5. ✅ DomainViewModel atualizado para incluir todos os campos necessários (UpdatedAt, Ttl, Id, WhoIs, WhoisData)
+6. ✅ Parser WHOIS estruturado implementado
+7. ✅ Dados WHOIS organizados e exibidos em formato estruturado
+8. ✅ Footer mínimo com apenas copyright
 

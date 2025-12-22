@@ -13,6 +13,7 @@ namespace Desafio.Umbler.Models
         public int? Id { get; set; }
         public List<string> NameServers { get; set; } = new List<string>();
         public string WhoIs { get; set; }
+        public WhoisData WhoisData { get; set; }
         public string Error { get; set; }
         public int? RequestStatus { get; set; }
     }

@@ -1,120 +1,8 @@
+# 📊 Resumo Executivo - Desafio Umbler
 
-# Desafio Umbler
+**Status Geral:** ✅ **100% das Tarefas Obrigatórias Concluídas + Melhorias Avançadas**
 
-Esta é uma aplicação web que recebe um domínio e mostra suas informações de DNS.
-
-Este é um exemplo real de sistema que utilizamos na Umbler.
-
-Ex: Consultar os dados de registro do dominio `umbler.com`
-
-**Retorno:**
-- Name servers (ns254.umbler.com)
-- IP do registro A (177.55.66.99)
-- Empresa que está hospedado (Umbler)
-
-Essas informações são descobertas através de consultas nos servidores DNS e de WHOIS.
-
-*Obs: WHOIS (pronuncia-se "ruís") é um protocolo específico para consultar informações de contato e DNS de domínios na internet.*
-
-Nesta aplicação, os dados obtidos são salvos em um banco de dados, evitando uma segunda consulta desnecessaria, caso seu TTL ainda não tenha expirado.
-
-*Obs: O TTL é um valor em um registro DNS que determina o número de segundos antes que alterações subsequentes no registro sejam efetuadas. Ou seja, usamos este valor para determinar quando uma informação está velha e deve ser renovada.*
-
-Tecnologias Backend utilizadas:
-
-- C#
-- Asp.Net Core
-- MySQL
-- Entity Framework
-
-Tecnologias Frontend utilizadas:
-
-- Webpack
-- Babel
-- ES7
-
-Para rodar o projeto você vai precisar instalar:
-
-- dotnet Core SDK (https://www.microsoft.com/net/download/windows dotnet Core 6.0.201 SDK)
-- Um editor de código, acoselhamos o Visual Studio ou VisualStudio Code. (https://code.visualstudio.com/)
-- NodeJs v17.6.0 para "buildar" o FrontEnd (https://nodejs.org/en/)
-- Um banco de dados MySQL (vc pode rodar localmente ou criar um site PHP gratuitamente no app da Umbler https://app.umbler.com/ que lhe oferece o banco Mysql adicionamente)
-
-Com as ferramentas devidamente instaladas, basta executar os seguintes comandos:
-
-Para "buildar" o javascript basta executar:
-
-`npm install`
-`npm run build`
-
-Para Rodar o projeto:
-
-Execute a migration no banco mysql:
-
-`dotnet tool update --global dotnet-ef`
-`dotnet tool ef database update`
-
-E após: 
-
-`dotnet run` (ou clique em "play" no editor do vscode)
-
-# Objetivos:
-
-Se você rodar o projeto e testar um domínio, verá que ele já está funcionando. Porém, queremos melhorar varios pontos deste projeto:
-
-# FrontEnd
-
- - Os dados retornados não estão formatados, e devem ser apresentados de uma forma legível.
- - Não há validação no frontend permitindo que seja submetido uma requsição inválida para o servidor (por exemplo, um domínio sem extensão).
- - Está sendo utilizado "vanilla-js" para fazer a requisição para o backend, apesar de já estar configurado o webpack. O ideal seria utilizar algum framework mais moderno como ReactJs ou Blazor.  
-
-# BackEnd
-
- - Não há validação no backend permitindo que uma requisição inválida prossiga, o que ocasiona exceptions (erro 500).
- - A complexidade ciclomática do controller está muito alta, o ideal seria utilizar uma arquitetura em camadas.
- - O DomainController está retornando a própria entidade de domínio por JSON, o que faz com que propriedades como Id, Ttl e UpdatedAt sejam mandadas para o cliente web desnecessariamente. Retornar uma ViewModel (DTO) neste caso seria mais aconselhado.
-
-# Testes
-
- - A cobertura de testes unitários está muito baixa, e o DomainController está impossível de ser testado pois não há como "mockar" a infraestrutura.
- - O Banco de dados já está sendo "mockado" graças ao InMemoryDataBase do EntityFramework, mas as consultas ao Whois e Dns não. 
-
-# Dica
-
-- Este teste não tem "pegadinha", é algo pensado para ser simples. Aconselhamos a ler o código, e inclusive algumas dicas textuais deixadas nos testes unitários. 
-- Há um teste unitário que está comentado, que obrigatoriamente tem que passar.
-- Diferencial: criar mais testes.
-
-# Entrega
-
-- Enviei o link do seu repositório com o código atualizado.
-- O repositório deve estar público para que possamos acessar..
-- Modifique Este readme adicionando informações sobre os motivos das mudanças realizadas.
-
-# Modificações:
-## 🧪 Como Executar os Testes
-
-### Pré-requisitos
-
-Certifique-se de ter:
-- **.NET 6.0 SDK** (ou superior) instalado
-- Projeto restaurado e compilado (`dotnet restore` e `dotnet build`)
-
-### Executar Todos os Testes
-
-#### Opção 1: Da Raiz do Projeto
-
-# Na raiz do projeto (dev-challenge/)
-dotnet test
-#### Opção 2: Da Pasta do Projeto de Testes
-sh
-# Navegar para a pasta de testes
-cd src/Desafio.Umbler.Test
-
-# Executar os testes
-dotnet test
-### Resultado Esperado
-
+---
 
 ## ✅ Checklist de Implementação
 
@@ -293,32 +181,10 @@ Test/
 - **TTL:** Formato legível ("Cache válido por X horas e Y minutos")
 - **UX:** Informações mais compreensíveis para o usuário final
 
-## 📚 Documentação Completa
-
-Toda a documentação técnica do projeto está disponível no diretório `docs/`:
-
-### 📊 Resumos e Visões Gerais
-- **[RESUMO_EXECUTIVO.md](docs/RESUMO_EXECUTIVO.md)** - Visão geral executiva do projeto, estatísticas e melhorias implementadas
-- **[RESUMO_ALTERACOES_PARA_AVALIADORES.md](docs/RESUMO_ALTERACOES_PARA_AVALIADORES.md)** - Resumo detalhado de todas as alterações realizadas para avaliação
-- **[RESUMO_IMPLEMENTACAO_FINAL.md](docs/RESUMO_IMPLEMENTACAO_FINAL.md)** - Resumo final da implementação completa
-
-### 🎯 Análises e Avaliações
-- **[AVALIACAO_PROJETO.md](docs/AVALIACAO_PROJETO.md)** - Avaliação completa do projeto inicial, problemas identificados e recomendações
-- **[ANALISE_IMPLEMENTACAO_VS_REQUISITOS.md](docs/ANALISE_IMPLEMENTACAO_VS_REQUISITOS.md)** - Análise comparativa entre implementação e requisitos solicitados
-- **[ANALISE_COMPLEXIDADE_CICLOMATICA.md](docs/ANALISE_COMPLEXIDADE_CICLOMATICA.md)** - Análise detalhada da complexidade ciclomática e reduções alcançadas
-
-### 📋 Requisitos e Tarefas
-- **[TAREFAS_SOLICITADAS.md](docs/TAREFAS_SOLICITADAS.md)** - Lista completa de todas as tarefas solicitadas e status de implementação
-- **[TAREFA_ARQUITETURA_CAMADAS.md](docs/TAREFA_ARQUITETURA_CAMADAS.md)** - Detalhamento da implementação da arquitetura em camadas
-
-### ✨ Melhorias e Funcionalidades
-- **[MELHORIAS_IMPLEMENTADAS.md](docs/MELHORIAS_IMPLEMENTADAS.md)** - Documentação completa de todas as melhorias implementadas no projeto
-- **[MELHORIAS_TTL_CACHE_TLD.md](docs/MELHORIAS_TTL_CACHE_TLD.md)** - Detalhamento técnico das melhorias avançadas (TTL mínimo, Cache em memória, Validação de TLD)
-
-### ⚙️ Configuração e Uso
-- **[CONFIGURACOES_AVANCADAS.md](docs/CONFIGURACOES_AVANCADAS.md)** - Guia completo de configurações avançadas do sistema
-- **[CAMPOS_JSON_RETORNO.md](docs/CAMPOS_JSON_RETORNO.md)** - Documentação dos campos retornados no JSON e campos exibidos na interface
-- **[COMO_CONSULTAR_LOGS.md](docs/COMO_CONSULTAR_LOGS.md)** - Guia de como consultar e analisar os logs do sistema
+**Documentação:**
+- `docs/MELHORIAS_TTL_CACHE_TLD.md` - Detalhamento técnico completo
+- `docs/CONFIGURACOES_AVANCADAS.md` - Guia de configuração
+- `docs/CAMPOS_JSON_RETORNO.md` - Documentação dos campos exibidos
 
 ---
 

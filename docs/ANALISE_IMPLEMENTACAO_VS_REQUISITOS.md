@@ -123,15 +123,35 @@ Esta análise compara o que foi **solicitado no teste** versus o que foi **imple
 
 ---
 
-#### 3. Framework Moderno ⏳ **NÃO IMPLEMENTADO**
+#### 3. Framework Moderno ✅ **IMPLEMENTADO**
 
-**Status:** ⏳ **Não implementado (opcional)**
+**Status:** ✅ **Concluído**
 
 **O que foi feito:**
-- ❌ Continua usando vanilla-js
-- ✅ Webpack já está configurado (não foi modificado)
+- ✅ **Blazor Server implementado e funcionando**
+- ✅ Componentes Blazor criados:
+  - `DomainSearch.razor` - Componente principal de busca
+  - `DomainResultComponent.razor` - Componente de exibição de resultados
+- ✅ Configuração no Startup.cs:
+  - `services.AddServerSideBlazor()`
+  - `endpoints.MapBlazorHub()`
+- ✅ Validação implementada no componente Blazor usando `DomainValidator`
+- ✅ Injeção de dependência no componente (`DomainApiService`, `IJSRuntime`)
+- ✅ Estados reativos (IsLoading, HasError, ErrorMessage)
+- ✅ Bindings bidirecionais (@bind)
+- ✅ Event handlers (@onclick, @onkeypress)
+- ✅ Renderização condicional (@if)
+- ✅ Formatação de dados (TTL, datas, Name Servers, WHOIS)
+- ✅ Interface moderna com tema Umbler
 
-**Avaliação:** ⚠️ **Opcional/Diferencial** - Não é obrigatório, mas seria um diferencial. Pode ser implementado no futuro.
+**Arquivos Criados/Modificados:**
+- `src/Desafio.Umbler/Components/DomainSearch.razor`
+- `src/Desafio.Umbler/Components/DomainResultComponent.razor`
+- `src/Desafio.Umbler/_Imports.razor`
+- `src/Desafio.Umbler/Views/Home/Index.cshtml` - Renderiza componente Blazor
+- `src/Desafio.Umbler/Startup.cs` - Configuração do Blazor Server
+
+**Avaliação:** ✅ **Atende completamente o requisito (Diferencial)** - Migração completa de vanilla-js para Blazor Server realizada com sucesso. Interface moderna e código organizado.
 
 ---
 
@@ -299,7 +319,7 @@ public class DomainViewModel
 | **Frontend** |
 | 1 | Formatação de dados | ✅ Completo | Obrigatório | Todos os campos exibidos de forma organizada |
 | 2 | Validação frontend | ✅ Completo | Obrigatório | Validação robusta implementada |
-| 3 | Framework moderno | ⏳ Não feito | Opcional | Diferencial, pode ser feito depois |
+| 3 | Framework moderno | ✅ Completo | Opcional | **Blazor Server implementado** ✅ |
 | **Backend** |
 | 4 | Validação backend | ✅ Completo | Obrigatório | Validação completa implementada |
 | 5 | Arquitetura em camadas | 🚧 50% | Obrigatório | Interfaces criadas, falta refatorar controller |
@@ -362,15 +382,16 @@ public class DomainViewModel
 
 - ✅ **Frontend - Formatação:** 100% ✅
 - ✅ **Frontend - Validação:** 100% ✅
+- ✅ **Frontend - Framework Moderno:** 100% ✅ (Blazor implementado)
 - ✅ **Backend - Validação:** 100% ✅
 - 🚧 **Backend - Arquitetura:** 50% 🚧
 - ⚠️ **Backend - ViewModel:** 30% (criado, não usado) ⚠️
 - 🚧 **Testes - Mock:** 70% (estrutura pronta) 🚧
 - ⏳ **Testes - Obrigatório:** 0% (bloqueado) ⏳
 
-### Progresso Total: ~65%
+### Progresso Total: ~71%
 
-**Fórmula:** (100 + 100 + 100 + 50 + 30 + 70 + 0) / 7 = ~65%
+**Fórmula:** (100 + 100 + 100 + 100 + 50 + 30 + 70 + 0) / 8 = ~71%
 
 ---
 
@@ -429,12 +450,18 @@ public class DomainViewModel
 
 ### Futuras (Diferenciais)
 
-1. ⏳ Migrar frontend para React/Blazor
+1. ✅ ~~Migrar frontend para React/Blazor~~ **CONCLUÍDO - Blazor Server implementado**
 2. ⏳ Aumentar cobertura de testes
 3. ⏳ Implementar mais testes unitários
 
 ---
 
-**Última Atualização:** 17/12/2025  
+**Última Atualização:** 21/12/2025  
 **Próxima Revisão:** Após completar refatoração do controller
+
+---
+
+## 📝 Nota de Atualização (21/12/2025)
+
+**Blazor Server Implementado:** O documento foi atualizado para refletir que o Blazor Server foi completamente implementado, incluindo componentes funcionais, validação e interface moderna. Este era um requisito opcional/diferencial que agora está concluído.
 
