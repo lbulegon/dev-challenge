@@ -26,8 +26,9 @@ namespace Desafio.Umbler.Helpers
                 if (string.IsNullOrWhiteSpace(trimmedLine))
                     continue;
 
-                // Domain Name
-                if (TryExtractValue(trimmedLine, "Domain Name:", out var domainName))
+                // Domain Name (formato internacional e brasileiro)
+                if (TryExtractValue(trimmedLine, "Domain Name:", out var domainName) ||
+                    TryExtractValue(trimmedLine, "domain:", out domainName))
                 {
                     data.DomainName = domainName;
                     continue;
@@ -54,30 +55,38 @@ namespace Desafio.Umbler.Helpers
                     continue;
                 }
 
-                // Updated Date
-                if (TryExtractDate(trimmedLine, "Updated Date:", out var updatedDate))
+                // Updated Date (formato internacional e brasileiro)
+                if (TryExtractDate(trimmedLine, "Updated Date:", out var updatedDate) ||
+                    TryExtractDate(trimmedLine, "changed:", out updatedDate) ||
+                    TryExtractDate(trimmedLine, "last update:", out updatedDate))
                 {
                     data.UpdatedDate = updatedDate;
                     continue;
                 }
 
-                // Creation Date
-                if (TryExtractDate(trimmedLine, "Creation Date:", out var creationDate))
+                // Creation Date (formato internacional e brasileiro)
+                if (TryExtractDate(trimmedLine, "Creation Date:", out var creationDate) ||
+                    TryExtractDate(trimmedLine, "created:", out creationDate) ||
+                    TryExtractDate(trimmedLine, "created on:", out creationDate))
                 {
                     data.CreationDate = creationDate;
                     continue;
                 }
 
-                // Expiration Date
+                // Expiration Date (formato internacional e brasileiro)
                 if (TryExtractDate(trimmedLine, "Registrar Registration Expiration Date:", out var expirationDate) ||
-                    TryExtractDate(trimmedLine, "Registry Expiry Date:", out expirationDate))
+                    TryExtractDate(trimmedLine, "Registry Expiry Date:", out expirationDate) ||
+                    TryExtractDate(trimmedLine, "expires:", out expirationDate) ||
+                    TryExtractDate(trimmedLine, "expire:", out expirationDate))
                 {
                     data.ExpirationDate = expirationDate;
                     continue;
                 }
 
-                // Registrar
-                if (TryExtractValue(trimmedLine, "Registrar:", out var registrar))
+                // Registrar (formato internacional e brasileiro)
+                if (TryExtractValue(trimmedLine, "Registrar:", out var registrar) ||
+                    TryExtractValue(trimmedLine, "registrar:", out registrar) ||
+                    TryExtractValue(trimmedLine, "sponsoring registrar:", out registrar))
                 {
                     data.Registrar = registrar;
                     continue;
@@ -169,29 +178,58 @@ namespace Desafio.Umbler.Helpers
                 }
 
                 // Contact sections - detectar início de uma nova seção de contato pelo nome
-                if (trimmedLine.StartsWith("Registrant Name:", StringComparison.OrdinalIgnoreCase))
+                // Formato internacional e brasileiro (.br)
+                if (trimmedLine.StartsWith("Registrant Name:", StringComparison.OrdinalIgnoreCase) ||
+                    trimmedLine.StartsWith("owner:", StringComparison.OrdinalIgnoreCase) ||
+                    trimmedLine.StartsWith("owner-c:", StringComparison.OrdinalIgnoreCase))
                 {
                     currentContactType = "Registrant";
                     if (data.Registrant == null)
                         data.Registrant = new WhoisContact();
                     currentContact = data.Registrant;
-                    // Continue para processar o nome na seção de campos de contato abaixo
+                    // Se for formato brasileiro (owner:), extrair o valor
+                    if (TryExtractValue(trimmedLine, "owner:", out var ownerName) ||
+                        TryExtractValue(trimmedLine, "owner-c:", out ownerName))
+                    {
+                        currentContact.Name = ownerName;
+                    }
+                    continue;
                 }
-                else if (trimmedLine.StartsWith("Admin Name:", StringComparison.OrdinalIgnoreCase))
+                else if (trimmedLine.StartsWith("Admin Name:", StringComparison.OrdinalIgnoreCase) ||
+                         trimmedLine.StartsWith("admin-c:", StringComparison.OrdinalIgnoreCase))
                 {
                     currentContactType = "Admin";
                     if (data.Admin == null)
                         data.Admin = new WhoisContact();
                     currentContact = data.Admin;
-                    // Continue para processar o nome na seção de campos de contato abaixo
+                    if (TryExtractValue(trimmedLine, "admin-c:", out var adminName))
+                    {
+                        currentContact.Name = adminName;
+                    }
+                    continue;
                 }
-                else if (trimmedLine.StartsWith("Tech Name:", StringComparison.OrdinalIgnoreCase))
+                else if (trimmedLine.StartsWith("Tech Name:", StringComparison.OrdinalIgnoreCase) ||
+                         trimmedLine.StartsWith("tech-c:", StringComparison.OrdinalIgnoreCase))
                 {
                     currentContactType = "Tech";
                     if (data.Tech == null)
                         data.Tech = new WhoisContact();
                     currentContact = data.Tech;
-                    // Continue para processar o nome na seção de campos de contato abaixo
+                    if (TryExtractValue(trimmedLine, "tech-c:", out var techName))
+                    {
+                        currentContact.Name = techName;
+                    }
+                    continue;
+                }
+                
+                // Formato brasileiro: organização do owner
+                if (TryExtractValue(trimmedLine, "owner:", out var ownerOrg) && currentContactType == "Registrant" && currentContact != null)
+                {
+                    if (string.IsNullOrWhiteSpace(currentContact.Name))
+                        currentContact.Name = ownerOrg;
+                    else if (string.IsNullOrWhiteSpace(currentContact.Organization))
+                        currentContact.Organization = ownerOrg;
+                    continue;
                 }
 
                 // Contact fields (only process if we're in a contact section)
@@ -203,7 +241,10 @@ namespace Desafio.Umbler.Helpers
                         continue;
                     }
 
-                    if (TryExtractValue(trimmedLine, $"{currentContactType} Organization:", out var org))
+                    // Formato brasileiro: organização pode vir em diferentes formatos
+                    if (TryExtractValue(trimmedLine, $"{currentContactType} Organization:", out var org) ||
+                        TryExtractValue(trimmedLine, "organization:", out org) ||
+                        TryExtractValue(trimmedLine, "org:", out org))
                     {
                         currentContact.Organization = org;
                         continue;

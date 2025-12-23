@@ -122,7 +122,8 @@
     {
         HasError = true;
         ErrorMessage = message;
-        await JSRuntime.InvokeVoidAsync("alert", "Dados de pesquisa inconsistentes: " + message);
+        // Remover prefixo confuso e mostrar mensagem direta
+        await JSRuntime.InvokeVoidAsync("alert", message);
     }
 
     private void ToggleWhois()

@@ -66,13 +66,47 @@ namespace Desafio.Umbler.Helpers
                 return (false, "Formato de domínio inválido. A extensão do domínio deve ter pelo menos 2 caracteres", null);
             }
 
-            // Cada parte do domínio deve ter pelo menos 1 caractere válido
+            // Validar cada parte do domínio
             for (int i = 0; i < parts.Length - 1; i++)
             {
                 var part = parts[i];
-                if (string.IsNullOrWhiteSpace(part) || part == "-" || !Regex.IsMatch(part, @"^[a-z0-9-]+$", RegexOptions.IgnoreCase))
+                
+                // Validar se não está vazio
+                if (string.IsNullOrWhiteSpace(part))
+                {
+                    return (false, "Formato de domínio inválido. Cada parte do domínio não pode estar vazia", null);
+                }
+                
+                // Validar se não é apenas hífen
+                if (part == "-")
+                {
+                    return (false, "Formato de domínio inválido. Cada parte do domínio não pode conter apenas hífen", null);
+                }
+                
+                // Validar caracteres permitidos
+                if (!Regex.IsMatch(part, @"^[a-z0-9-]+$", RegexOptions.IgnoreCase))
                 {
                     return (false, "Formato de domínio inválido. Cada parte do domínio deve conter apenas letras, números e hífens", null);
+                }
+                
+                // Detectar padrões suspeitos comuns de erros de digitação ANTES da validação de comprimento
+                var lowerPart = part.ToLowerInvariant();
+                if (lowerPart == "ww" || lowerPart == "w" || lowerPart == "wwww")
+                {
+                    return (false, "Endereço inconsistente. Parece haver um erro de digitação. Você quis dizer 'www'? Se sim, remova o 'www' do início ou corrija a digitação (ex: terra.com.br em vez de ww.terra.com.br)", null);
+                }
+                
+                // Validar comprimento mínimo: cada parte deve ter pelo menos 2 caracteres
+                // (domínios com 1 caractere são extremamente raros e geralmente erros de digitação)
+                if (part.Length < 2)
+                {
+                    return (false, $"Endereço inconsistente. A parte '{part}' é muito curta. Verifique se há erros de digitação no domínio", null);
+                }
+                
+                // Validar que não termina ou começa com hífen em cada parte
+                if (part.StartsWith("-") || part.EndsWith("-"))
+                {
+                    return (false, $"Formato de domínio inválido. A parte '{part}' não pode começar ou terminar com hífen", null);
                 }
             }
 

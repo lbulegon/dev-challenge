@@ -16,7 +16,19 @@ namespace Desafio.Umbler.Services
                 Timeout = TimeSpan.FromSeconds(10) // Timeout de 10 segundos para consulta DNS completa
             };
             var lookup = new LookupClient(lookupOptions);
-            var result = await lookup.QueryAsync(domain, QueryType.ANY);
+            
+            // Tentar primeiro com QueryType.A (mais confiável para obter IP)
+            IDnsQueryResponse result;
+            try
+            {
+                result = await lookup.QueryAsync(domain, QueryType.A);
+            }
+            catch
+            {
+                // Se falhar, tentar com ANY como fallback
+                result = await lookup.QueryAsync(domain, QueryType.ANY);
+            }
+            
             var record = result.Answers.ARecords().FirstOrDefault();
 
             if (record == null)
