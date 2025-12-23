@@ -92,6 +92,50 @@ Se você rodar o projeto e testar um domínio, verá que ele já está funcionan
 - Modifique Este readme adicionando informações sobre os motivos das mudanças realizadas.
 
 # Modificações:
+
+## 🚀 Como Executar a Aplicação
+
+### Opção 1: Usando o Script `run.bat` (Recomendado para Windows)
+
+Para facilitar a execução da aplicação a partir da raiz do projeto, foi criado o arquivo `run.bat` que automatiza o processo.
+
+**Como usar:**
+
+1. **No PowerShell:**
+   ```powershell
+   .\run.bat
+   ```
+   > **Nota:** No PowerShell, pode ser necessário usar `./run.bat` (com barra e ponto). Se `run.bat` não funcionar, use `.\run.bat` .
+
+2. **No CMD (Prompt de Comando):**
+   ```cmd
+   run.bat
+   ```
+
+3. **Ou simplesmente dê duplo clique** no arquivo `run.bat` no explorador de arquivos
+
+O script irá:
+- Executar `dotnet run --project src/Desafio.Umbler/Desafio.Umbler.csproj` automaticamente
+- Exibir informações úteis no console
+- Manter o console aberto após a execução para visualizar os logs
+
+### Opção 2: Comando Manual
+
+Se preferir executar manualmente:
+
+```bash
+# Da raiz do projeto
+dotnet run --project src/Desafio.Umbler/Desafio.Umbler.csproj
+
+# Ou navegando para a pasta do projeto
+cd src/Desafio.Umbler
+dotnet run
+```
+
+**Nota:** O uso do `run.bat` é opcional, mas facilita a execução ao garantir que o comando correto seja executado a partir da raiz do projeto.
+
+---
+
 ## 🧪 Como Executar os Testes
 
 ### Pré-requisitos
