@@ -1,77 +1,109 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
+using Desafio.Umbler.Helpers;
+using Desafio.Umbler.Services;
+using Desafio.Umbler.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Desafio.Umbler.Models;
-using Whois.NET;
+using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using DnsClient;
 
 namespace Desafio.Umbler.Controllers
 {
     [Route("api")]
     public class DomainController : Controller
     {
-        private readonly DatabaseContext _db;
+        private readonly IDomainService _domainService;
+        private readonly ILogger<DomainController> _logger;
 
-        public DomainController(DatabaseContext db)
+        public DomainController(IDomainService domainService, ILogger<DomainController> logger)
         {
-            _db = db;
+            _domainService = domainService;
+            _logger = logger;
         }
 
         [HttpGet, Route("domain/{domainName}")]
         public async Task<IActionResult> Get(string domainName)
         {
-            var domain = await _db.Domains.FirstOrDefaultAsync(d => d.Name == domainName);
+            _logger.LogInformation("Iniciando consulta de domínio: {DomainName}", domainName);
 
-            if (domain == null)
+            try
             {
-                var response = await WhoisClient.QueryAsync(domainName);
-
-                var lookup = new LookupClient();
-                var result = await lookup.QueryAsync(domainName, QueryType.ANY);
-                var record = result.Answers.ARecords().FirstOrDefault();
-                var address = record?.Address;
-                var ip = address?.ToString();
-
-                var hostResponse = await WhoisClient.QueryAsync(ip);
-
-                domain = new Domain
+                if (string.IsNullOrWhiteSpace(domainName))
                 {
-                    Name = domainName,
-                    Ip = ip,
-                    UpdatedAt = DateTime.Now,
-                    WhoIs = response.Raw,
-                    Ttl = record?.TimeToLive ?? 0,
-                    HostedAt = hostResponse.OrganizationName
-                };
+                    _logger.LogWarning("Tentativa de consulta com domínio vazio ou nulo");
+                    return BadRequest(new { error = "Nome do domínio é obrigatório" });
+                }
 
-                _db.Domains.Add(domain);
+                // Validar formato do domínio
+                var validationResult = DomainValidator.ValidateDomain(domainName);
+                if (!validationResult.IsValid)
+                {
+                    _logger.LogWarning("Domínio com formato inválido: {DomainName}", domainName);
+                    return BadRequest(new { error = validationResult.ErrorMessage });
+                }
+
+                // Normalizar domínio (remover protocolo, www, etc.)
+                domainName = validationResult.NormalizedDomain;
+
+                // Obter informações do domínio através do serviço
+                var domainViewModel = await _domainService.GetDomainInfoAsync(domainName);
+
+                if (domainViewModel == null)
+                {
+                    _logger.LogWarning("Não foi possível obter informações do domínio: {DomainName}", domainName);
+                    return NotFound(new { error = $"Domínio '{domainName}' não encontrado" });
+                }
+
+                _logger.LogInformation("Consulta de domínio concluída com sucesso: {DomainName}", domainName);
+                return Ok(domainViewModel);
             }
-
-            if (DateTime.Now.Subtract(domain.UpdatedAt).TotalMinutes > domain.Ttl)
+            catch (Exception ex)
             {
-                var response = await WhoisClient.QueryAsync(domainName);
+                _logger.LogError(ex, "Erro ao processar consulta do domínio: {DomainName}", domainName);
+                
+                // Detectar erros específicos de MySQL/Database
+                var errorMessage = GetErrorMessage(ex);
+                
+                return StatusCode(500, new { error = errorMessage, message = ex.Message });
+            }
+        }
 
-                var lookup = new LookupClient();
-                var result = await lookup.QueryAsync(domainName, QueryType.ANY);
-                var record = result.Answers.ARecords().FirstOrDefault();
-                var address = record?.Address;
-                var ip = address?.ToString();
+        private string GetErrorMessage(Exception ex)
+        {
+            // Verificar se é erro de conexão com banco de dados
+            var exceptionMessage = ex.ToString().ToLowerInvariant();
+            var innerException = ex.InnerException?.ToString().ToLowerInvariant() ?? "";
+            var fullMessage = exceptionMessage + " " + innerException;
 
-                var hostResponse = await WhoisClient.QueryAsync(ip);
-
-                domain.Name = domainName;
-                domain.Ip = ip;
-                domain.UpdatedAt = DateTime.Now;
-                domain.WhoIs = response.Raw;
-                domain.Ttl = record?.TimeToLive ?? 0;
-                domain.HostedAt = hostResponse.OrganizationName;
+            // Verificar se é erro de MySQL
+            if (fullMessage.Contains("unable to connect to any of the specified mysql hosts") ||
+                fullMessage.Contains("unable to connect") && fullMessage.Contains("mysql"))
+            {
+                return "❌ Erro de Conexão com Banco de Dados MySQL: O servidor MySQL não está acessível. Verifique se o servidor está online e se a conexão de rede está funcionando.";
             }
 
-            await _db.SaveChangesAsync();
+            if (fullMessage.Contains("connection timeout") && fullMessage.Contains("mysql"))
+            {
+                return "❌ Timeout de Conexão MySQL: O servidor MySQL não respondeu a tempo. Verifique se o servidor está acessível e se não há problemas de rede ou firewall bloqueando a conexão.";
+            }
 
-            return Ok(domain);
+            // Verificar se é erro de Entity Framework relacionado a banco
+            if (ex is DbUpdateException || ex is InvalidOperationException)
+            {
+                if (fullMessage.Contains("mysql") || fullMessage.Contains("database") || fullMessage.Contains("connection"))
+                {
+                    return "❌ Erro de Banco de Dados: Não foi possível conectar ao banco de dados MySQL. Verifique se o servidor está online e acessível.";
+                }
+            }
+
+            // Verificar se é erro de timeout genérico
+            if (fullMessage.Contains("timeout") || fullMessage.Contains("timed out"))
+            {
+                return "⏱️ Timeout: A requisição demorou muito para ser processada. Isso pode ocorrer se o servidor MySQL ou serviços externos estiverem lentos ou indisponíveis.";
+            }
+
+            // Erro genérico
+            return "❌ Erro ao processar a consulta. Tente novamente mais tarde.";
         }
     }
 }

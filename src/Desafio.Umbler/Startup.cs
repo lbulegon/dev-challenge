@@ -1,5 +1,7 @@
 ﻿using System;
 using Desafio.Umbler.Models;
+using Desafio.Umbler.Repositories;
+using Desafio.Umbler.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +45,30 @@ namespace Desafio.Umbler
 
 
             services.AddControllersWithViews();
+            services.AddServerSideBlazor();
+            services.AddHttpClient();
+            services.AddHttpContextAccessor();
+
+            // Memory Cache para reduzir carga no banco
+            services.AddMemoryCache(options =>
+            {
+                options.SizeLimit = 1024; // Limite de 1024 itens no cache
+            });
+
+            // Configurações de domínio
+            var domainSettings = Configuration.GetSection("DomainSettings").Get<DomainSettings>() ?? new DomainSettings();
+            services.AddSingleton(domainSettings);
+
+            // Serviços
+            services.AddScoped<IWhoisService, WhoisService>();
+            services.AddScoped<IDnsService, DnsService>();
+            services.AddScoped<IDomainService, DomainService>();
+
+            // Repositórios
+            services.AddScoped<IDomainRepository, DomainRepository>();
+
+            // Serviço para componentes Blazor
+            services.AddScoped<DomainApiService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,6 +91,7 @@ namespace Desafio.Umbler
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapBlazorHub();
             });
         }
     }

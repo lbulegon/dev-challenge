@@ -18,37 +18,30 @@
     </environment>
 </head>
 <body>
-    <nav id="menu" class="bg-primary Fixed navbar navbar-default navbar-fixed-top navbar-toggleable-xl " role="navigation">
-        <div class="navbar-header">
-            <a id="toogle-menu-mobile" href="#menu-mobile" class="d-block float-xs-right hidden-xl-up"><span class="icon icon-nav-drawer icon-4x"></span></a>  
-            <a class="navbar-brand float-xs-left" href="/"><div class="logo-umbler-negativo"></div></a>
+    <header class="site-header">
+        <div class="container">
+            <a class="logo-link" href="/">
+                <img src="~/assets/tpl/logotipo.png" alt="Umbler Logo" class="umbler-logo" />
+            </a>
         </div>
-        <!-- <div class="collapse navbar-collapse pos-relative float-xs-right" id="navbarSupportedContent">		
-        </div> -->
-    </nav>
+    </header>
 
-    <div class="container body-content">
+    <main class="main-content">
         @RenderBody()
-        <hr />
-        <footer id="footer" class="overflow-hidden">
-            <div class="container pt-5 pos-relative">
-                <div class="row flex-lg">
-                    <div class="col-lg-12">
-                        <div class="footer-copyright flex-sm flex-sm-middle my-3 text-xs-center text-sm-left">
-                            <a href="/" class="mr-2 hidden-xs-down">
-                                <svg class="img-svg img-logo">
-                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#img-umbler-favicon"></use>
-                                </svg>
-                            </a>
-                            <b class="mr-3 hidden-lg-down">Umbler, Inc. © 2017</b>                                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
-    </div>
+    </main>
     
-    <script src="~/js/site.js" asp-append-version="true"></script>   
+    <footer class="site-footer-minimal">
+        <div class="container">
+            <div class="footer-copyright-minimal">
+                <p>&copy; @DateTime.Now.Year Umbler, Inc. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="_framework/blazor.server.js"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

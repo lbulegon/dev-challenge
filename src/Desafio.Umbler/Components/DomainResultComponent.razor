@@ -1,0 +1,519 @@
+@using Desafio.Umbler.Models
+@using System.Globalization
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components
+
+@if (Result != null && string.IsNullOrEmpty(Result.Error))
+{
+    <div class="domain-result-wrapper">
+        <div class="domain-result-card">
+            <div class="domain-card-header">
+                <div class="domain-icon-wrapper">
+                    <i class="domain-icon icon icon-globe"></i>
+                </div>
+                <div class="domain-title-section">
+                    <h3 class="domain-name">@(Result.Name ?? "N/A")</h3>
+                    <span class="domain-status">Domínio verificado</span>
+                </div>
+            </div>
+
+            <!-- Visualização Formatada Completa -->
+            <div class="domain-card-body">
+                <div class="domain-info-grid">
+                    @if (Result.Id.HasValue)
+                    {
+                        <div class="domain-info-box id-box">
+                            <div class="info-icon-wrapper id-icon">
+                                <i class="icon icon-tag"></i>
+                            </div>
+                            <div class="info-content">
+                                <label class="info-label">ID de Registro</label>
+                                <span class="info-value id-value">#@Result.Id.Value</span>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="domain-info-box">
+                        <div class="info-icon-wrapper ip-icon">
+                            <i class="icon icon-network"></i>
+                        </div>
+                        <div class="info-content">
+                            <label class="info-label">Endereço IP</label>
+                            <span class="info-value ip-value">@(Result.Ip ?? "Não encontrado")</span>
+                        </div>
+                    </div>
+
+                    <div class="domain-info-box">
+                        <div class="info-icon-wrapper host-icon">
+                            <i class="icon icon-building"></i>
+                        </div>
+                        <div class="info-content">
+                            <label class="info-label">Hospedado em</label>
+                            <span class="info-value host-value">@(Result.HostedAt ?? "Não informado")</span>
+                        </div>
+                    </div>
+
+                    <div class="domain-info-box">
+                        <div class="info-icon-wrapper time-icon">
+                            <i class="icon icon-clock"></i>
+                        </div>
+                        <div class="info-content">
+                            <label class="info-label">Última Atualização</label>
+                            <span class="info-value time-value">@FormatDate(Result.UpdatedAt)</span>
+                        </div>
+                    </div>
+
+                    <div class="domain-info-box">
+                        <div class="info-icon-wrapper ttl-icon">
+                            <i class="icon icon-timer"></i>
+                        </div>
+                        <div class="info-content">
+                            <label class="info-label">TTL (Time To Live)</label>
+                            <span class="info-value ttl-value">@FormatTTL(Result.Ttl)</span>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Result.NameServers != null && Result.NameServers.Count > 0)
+                {
+                    <div class="nameservers-section">
+                        <div class="nameservers-header">
+                            <h5 class="nameservers-title">
+                                <i class="icon icon-server mr-2"></i>
+                                Name Servers (@Result.NameServers.Count)
+                            </h5>
+                        </div>
+                        <div class="nameservers-list">
+                            @foreach (var ns in Result.NameServers)
+                            {
+                                <div class="nameserver-item">
+                                    <i class="icon icon-check-circle nameserver-icon"></i>
+                                    <span class="nameserver-value">@ns</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @if (Result.WhoisData != null)
+                {
+                    <div class="whois-structured-section">
+                        <div class="whois-header" @onclick="ToggleWhoisStructuredDisplay" style="cursor: pointer;">
+                            <h5 class="whois-title">
+                                <i class="icon icon-info-circle mr-2"></i>
+                                Informações WHOIS Estruturadas
+                                <i class="icon icon-chevron-down whois-chevron" style="transform: @(showWhoisStructured ? "rotate(180deg)" : "rotate(0deg)");"></i>
+                            </h5>
+                        </div>
+                        <div class="whois-structured-content" style="display: @(showWhoisStructured ? "block" : "none");">
+                            @{
+                                var data = Result.WhoisData;
+                            }
+                            
+                            <!-- Informações do Registro -->
+                            <div class="whois-data-section">
+                                <h6 class="whois-data-section-title">
+                                    <i class="icon icon-info-circle mr-2"></i>
+                                    Informações do Registro
+                                </h6>
+                                <div class="whois-data-grid">
+                                    @if (!string.IsNullOrWhiteSpace(data.Registrar))
+                                    {
+                                        <div class="whois-data-item">
+                                            <span class="whois-data-label">Registrar:</span>
+                                            <span class="whois-data-value">@data.Registrar</span>
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(data.RegistrarIanaId))
+                                    {
+                                        <div class="whois-data-item">
+                                            <span class="whois-data-label">Registrar IANA ID:</span>
+                                            <span class="whois-data-value">@data.RegistrarIanaId</span>
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(data.RegistrarUrl))
+                                    {
+                                        <div class="whois-data-item">
+                                            <span class="whois-data-label">Registrar URL:</span>
+                                            <span class="whois-data-value"><a href="@data.RegistrarUrl" target="_blank" rel="noopener">@data.RegistrarUrl</a></span>
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(data.RegistryDomainId))
+                                    {
+                                        <div class="whois-data-item">
+                                            <span class="whois-data-label">Registry Domain ID:</span>
+                                            <span class="whois-data-value code-value">@data.RegistryDomainId</span>
+                                        </div>
+                                    }
+                                    @if (data.CreationDate.HasValue)
+                                    {
+                                        <div class="whois-data-item">
+                                            <span class="whois-data-label">Data de Criação:</span>
+                                            <span class="whois-data-value">@FormatWhoisDate(data.CreationDate)</span>
+                                        </div>
+                                    }
+                                    @if (data.UpdatedDate.HasValue)
+                                    {
+                                        <div class="whois-data-item">
+                                            <span class="whois-data-label">Data de Atualização:</span>
+                                            <span class="whois-data-value">@FormatWhoisDate(data.UpdatedDate)</span>
+                                        </div>
+                                    }
+                                    @if (data.ExpirationDate.HasValue)
+                                    {
+                                        <div class="whois-data-item">
+                                            <span class="whois-data-label">Data de Expiração:</span>
+                                            <span class="whois-data-value">@FormatWhoisDate(data.ExpirationDate)</span>
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(data.DnsSec))
+                                    {
+                                        <div class="whois-data-item">
+                                            <span class="whois-data-label">DNSSEC:</span>
+                                            <span class="whois-data-value">@data.DnsSec</span>
+                                        </div>
+                                    }
+                                    @if (data.DomainStatus != null && data.DomainStatus.Count > 0)
+                                    {
+                                        <div class="whois-data-item">
+                                            <span class="whois-data-label">Status do Domínio:</span>
+                                            <div class="whois-status-list">
+                                                @foreach (var status in data.DomainStatus)
+                                                {
+                                                    <span class="whois-status-badge">@status</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Registrant -->
+                            @if (data.Registrant != null)
+                            {
+                                <div class="whois-data-section">
+                                    <h6 class="whois-data-section-title">
+                                        <i class="icon icon-user mr-2"></i>
+                                        Titular (Registrant)
+                                    </h6>
+                                    <div class="whois-data-grid">
+                                        @RenderContact(data.Registrant)
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Admin -->
+                            @if (data.Admin != null)
+                            {
+                                <div class="whois-data-section">
+                                    <h6 class="whois-data-section-title">
+                                        <i class="icon icon-settings mr-2"></i>
+                                        Administrativo (Admin)
+                                    </h6>
+                                    <div class="whois-data-grid">
+                                        @RenderContact(data.Admin)
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Tech -->
+                            @if (data.Tech != null)
+                            {
+                                <div class="whois-data-section">
+                                    <h6 class="whois-data-section-title">
+                                        <i class="icon icon-tool mr-2"></i>
+                                        Técnico (Tech)
+                                    </h6>
+                                    <div class="whois-data-grid">
+                                        @RenderContact(data.Tech)
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Abuse Contact -->
+                            @if (!string.IsNullOrWhiteSpace(data.RegistrarAbuseContactEmail) || !string.IsNullOrWhiteSpace(data.RegistrarAbuseContactPhone))
+                            {
+                                <div class="whois-data-section">
+                                    <h6 class="whois-data-section-title">
+                                        <i class="icon icon-warning mr-2"></i>
+                                        Contato de Abuso
+                                    </h6>
+                                    <div class="whois-data-grid">
+                                        @if (!string.IsNullOrWhiteSpace(data.RegistrarAbuseContactEmail))
+                                        {
+                                            <div class="whois-data-item">
+                                                <span class="whois-data-label">E-mail:</span>
+                                                <span class="whois-data-value"><a href="mailto:@data.RegistrarAbuseContactEmail">@data.RegistrarAbuseContactEmail</a></span>
+                                            </div>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(data.RegistrarAbuseContactPhone))
+                                        {
+                                            <div class="whois-data-item">
+                                                <span class="whois-data-label">Telefone:</span>
+                                                <span class="whois-data-value">@data.RegistrarAbuseContactPhone</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Result.WhoIs))
+                {
+                    <div class="whois-section">
+                        <div class="whois-header" @onclick="ToggleWhoisDisplay" style="cursor: pointer;">
+                            <h5 class="whois-title">
+                                <i class="icon icon-document mr-2"></i>
+                                Dados WHOIS Completos (Raw)
+                                <i class="icon icon-chevron-down whois-chevron" style="transform: @(showWhois ? "rotate(180deg)" : "rotate(0deg)");"></i>
+                            </h5>
+                        </div>
+                        <div class="whois-content" style="display: @(showWhois ? "block" : "none");">
+                            <pre class="whois-text">@Result.WhoIs</pre>
+                        </div>
+                    </div>
+                }
+
+                <div class="json-section">
+                    <div class="json-header" @onclick="ToggleJsonDisplay" style="cursor: pointer;">
+                        <h5 class="json-title">
+                            <i class="icon icon-code mr-2"></i>
+                            JSON Completo
+                            <i class="icon icon-chevron-down json-chevron" style="transform: @(showJson ? "rotate(180deg)" : "rotate(0deg)");"></i>
+                        </h5>
+                    </div>
+                    <div class="json-content" style="display: @(showJson ? "block" : "none");">
+                        <pre class="json-text">@FormatJson()</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (Result != null && !string.IsNullOrEmpty(Result.Error))
+{
+    <div class="domain-result-wrapper">
+        <div class="domain-error-card">
+            <div class="error-icon-wrapper">
+                <i class="error-icon icon icon-warning"></i>
+            </div>
+            <div class="error-content">
+                <h4 class="error-title">Erro na consulta</h4>
+                <p class="error-message">@Result.Error</p>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public DomainResult Result { get; set; }
+
+    [Parameter]
+    public EventCallback OnToggleWhois { get; set; }
+
+    private bool showWhois = false;
+    private bool showWhoisStructured = true; // Expandido por padrão
+    private bool showJson = false;
+
+    private void ToggleWhoisDisplay()
+    {
+        showWhois = !showWhois;
+    }
+
+    private void ToggleWhoisStructuredDisplay()
+    {
+        showWhoisStructured = !showWhoisStructured;
+    }
+
+    private void ToggleJsonDisplay()
+    {
+        showJson = !showJson;
+    }
+
+    private RenderFragment RenderContact(WhoisContact contact) => __builder =>
+    {
+        if (!string.IsNullOrWhiteSpace(contact.Name))
+        {
+            <div class="whois-data-item">
+                <span class="whois-data-label">Nome:</span>
+                <span class="whois-data-value">@contact.Name</span>
+            </div>
+        }
+        if (!string.IsNullOrWhiteSpace(contact.Organization))
+        {
+            <div class="whois-data-item">
+                <span class="whois-data-label">Organização:</span>
+                <span class="whois-data-value">@contact.Organization</span>
+            </div>
+        }
+        if (!string.IsNullOrWhiteSpace(contact.Street))
+        {
+            <div class="whois-data-item">
+                <span class="whois-data-label">Endereço:</span>
+                <span class="whois-data-value">@contact.Street</span>
+            </div>
+        }
+        if (!string.IsNullOrWhiteSpace(contact.City))
+        {
+            <div class="whois-data-item">
+                <span class="whois-data-label">Cidade:</span>
+                <span class="whois-data-value">@contact.City</span>
+            </div>
+        }
+        if (!string.IsNullOrWhiteSpace(contact.State))
+        {
+            <div class="whois-data-item">
+                <span class="whois-data-label">Estado/Província:</span>
+                <span class="whois-data-value">@contact.State</span>
+            </div>
+        }
+        if (!string.IsNullOrWhiteSpace(contact.PostalCode))
+        {
+            <div class="whois-data-item">
+                <span class="whois-data-label">CEP:</span>
+                <span class="whois-data-value">@contact.PostalCode</span>
+            </div>
+        }
+        if (!string.IsNullOrWhiteSpace(contact.Country))
+        {
+            <div class="whois-data-item">
+                <span class="whois-data-label">País:</span>
+                <span class="whois-data-value">@contact.Country</span>
+            </div>
+        }
+        if (!string.IsNullOrWhiteSpace(contact.Phone))
+        {
+            <div class="whois-data-item">
+                <span class="whois-data-label">Telefone:</span>
+                <span class="whois-data-value">@contact.Phone@(!string.IsNullOrWhiteSpace(contact.PhoneExt) ? $" Ext: {contact.PhoneExt}" : "")</span>
+            </div>
+        }
+        if (!string.IsNullOrWhiteSpace(contact.Fax))
+        {
+            <div class="whois-data-item">
+                <span class="whois-data-label">Fax:</span>
+                <span class="whois-data-value">@contact.Fax@(!string.IsNullOrWhiteSpace(contact.FaxExt) ? $" Ext: {contact.FaxExt}" : "")</span>
+            </div>
+        }
+        if (!string.IsNullOrWhiteSpace(contact.Email))
+        {
+            <div class="whois-data-item">
+                <span class="whois-data-label">E-mail:</span>
+                <span class="whois-data-value"><a href="mailto:@contact.Email">@contact.Email</a></span>
+            </div>
+        }
+    };
+
+    private string FormatWhoisDate(DateTime? date)
+    {
+        if (!date.HasValue) return "N/A";
+        return date.Value.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.GetCultureInfo("pt-BR")) + " UTC";
+    }
+
+    private string FormatDate(DateTime? date)
+    {
+        if (!date.HasValue) return "N/A";
+        
+        var timeSpan = DateTime.Now - date.Value;
+        
+        if (timeSpan.TotalMinutes < 1)
+        {
+            return "Atualizado agora";
+        }
+        else if (timeSpan.TotalMinutes < 60)
+        {
+            var minutes = (int)timeSpan.TotalMinutes;
+            return $"Atualizado há {minutes} {(minutes == 1 ? "minuto" : "minutos")}";
+        }
+        else if (timeSpan.TotalHours < 24)
+        {
+            var hours = (int)timeSpan.TotalHours;
+            var remainingMinutes = (int)timeSpan.TotalMinutes % 60;
+            if (remainingMinutes == 0)
+            {
+                return $"Atualizado há {hours} {(hours == 1 ? "hora" : "horas")}";
+            }
+            return $"Atualizado há {hours} {(hours == 1 ? "hora" : "horas")} e {remainingMinutes} {(remainingMinutes == 1 ? "minuto" : "minutos")}";
+        }
+        else if (timeSpan.TotalDays < 7)
+        {
+            var days = (int)timeSpan.TotalDays;
+            var remainingHours = (int)timeSpan.TotalHours % 24;
+            if (remainingHours == 0)
+            {
+                return $"Atualizado há {days} {(days == 1 ? "dia" : "dias")}";
+            }
+            return $"Atualizado há {days} {(days == 1 ? "dia" : "dias")} e {remainingHours} {(remainingHours == 1 ? "hora" : "horas")}";
+        }
+        else
+        {
+            // Para períodos maiores, mostrar data completa
+            return $"Atualizado em {date.Value.ToString("dd/MM/yyyy HH:mm", CultureInfo.GetCultureInfo("pt-BR"))}";
+        }
+    }
+
+    private string FormatTTL(int? ttlSeconds)
+    {
+        if (!ttlSeconds.HasValue) return "N/A";
+
+        var ttl = ttlSeconds.Value;
+        var hours = ttl / 3600;
+        var minutes = (ttl % 3600) / 60;
+        var seconds = ttl % 60;
+
+        // Formatar como "Cache válido por X horas/minutos"
+        if (hours > 0)
+        {
+            if (minutes == 0 && seconds == 0)
+            {
+                return $"Cache válido por {hours} {(hours == 1 ? "hora" : "horas")}";
+            }
+            else if (minutes > 0 && seconds == 0)
+            {
+                return $"Cache válido por {hours} {(hours == 1 ? "hora" : "horas")} e {minutes} {(minutes == 1 ? "minuto" : "minutos")}";
+            }
+            else
+            {
+                return $"Cache válido por {hours} {(hours == 1 ? "hora" : "horas")}, {minutes} {(minutes == 1 ? "minuto" : "minutos")} e {seconds} {(seconds == 1 ? "segundo" : "segundos")}";
+            }
+        }
+        else if (minutes > 0)
+        {
+            if (seconds == 0)
+            {
+                return $"Cache válido por {minutes} {(minutes == 1 ? "minuto" : "minutos")}";
+            }
+            else
+            {
+                return $"Cache válido por {minutes} {(minutes == 1 ? "minuto" : "minutos")} e {seconds} {(seconds == 1 ? "segundo" : "segundos")}";
+            }
+        }
+        else
+        {
+            return $"Cache válido por {seconds} {(seconds == 1 ? "segundo" : "segundos")}";
+        }
+    }
+
+    private string FormatJson()
+    {
+        if (Result == null) return "{}";
+
+        try
+        {
+            var jsonOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            return JsonSerializer.Serialize(Result, jsonOptions);
+        }
+        catch
+        {
+            return "Erro ao formatar JSON";
+        }
+    }
+}
