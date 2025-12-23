@@ -367,6 +367,7 @@ Toda a documentação técnica do projeto está disponível no diretório `docs/
 - **[CONFIGURACOES_AVANCADAS.md](docs/CONFIGURACOES_AVANCADAS.md)** - Guia completo de configurações avançadas do sistema
 - **[CAMPOS_JSON_RETORNO.md](docs/CAMPOS_JSON_RETORNO.md)** - Documentação dos campos retornados no JSON e campos exibidos na interface
 - **[COMO_CONSULTAR_LOGS.md](docs/COMO_CONSULTAR_LOGS.md)** - Guia de como consultar e analisar os logs do sistema
+- **[CONSULTAS_DNS_WHOIS.md](docs/CONSULTAS_DNS_WHOIS.md)** - Explicação detalhada do que cada consulta (DNS e WHOIS) retorna
 
 ---
 
